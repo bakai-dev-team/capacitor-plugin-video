@@ -1,6 +1,6 @@
 {
-  "appId": "com.example.plugin",
-  "appName": "example-app",
+  "appId": "com.erlanz.plugin.video.example",
+  "appName": "VideoPluginExample",
   "webDir": "dist",
   "plugins": {
     "SplashScreen": {

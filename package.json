@@ -7,13 +7,14 @@
   "types": "dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
   "files": [
-    "android/src/main/",
-    "android/build.gradle",
+    "android",
     "dist/",
-    "ios/Sources",
-    "ios/Tests",
+    "ios",
     "Package.swift",
-    "CapacitorPluginVideo.podspec"
+    "CapacitorPluginVideo.podspec",
+    "src",
+    "README.md",
+    "LICENSE"
   ],
   "author": "Erlan Zhumanasyrov",
   "license": "MIT",
@@ -32,7 +33,7 @@
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
     "verify:ios": "xcodebuild -scheme CapacitorPluginVideo -destination generic/platform=iOS",
-    "verify:android": "cd android && ./gradlew clean build test && cd ..",
+    "verify:android": "cd android && JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew clean build test && cd ..",
     "verify:web": "npm run build",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
     "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix --format",

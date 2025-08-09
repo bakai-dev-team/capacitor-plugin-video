@@ -1,3 +1,10 @@
+// src/definitions.ts
+export interface PlayOptions {
+  src: string;
+  muted?: boolean;
+  loop?: boolean;
+}
 export interface VideoPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  play(options: PlayOptions): Promise<void>;
+  stop(): Promise<void>;
 }
