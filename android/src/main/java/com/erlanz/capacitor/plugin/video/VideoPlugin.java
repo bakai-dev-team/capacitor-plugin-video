@@ -26,6 +26,9 @@ public class VideoPlugin extends Plugin {
   @Nullable private ExoPlayer player;
   @Nullable private PlayerView view;
 
+  private long lastPositionMs = 0L;
+  private boolean wasPlayingBeforeBackground = false;
+
   @PluginMethod
   public void play(PluginCall call) {
     final String src = call.getString("src");
@@ -90,6 +93,8 @@ public class VideoPlugin extends Plugin {
 
   @PluginMethod
   public void stop(PluginCall call) {
+    lastPositionMs = 0L;
+    wasPlayingBeforeBackground = false;
     final Activity ctx = getBridge().getActivity();
     ctx.runOnUiThread(() -> {
       if (player != null) {
@@ -104,5 +109,27 @@ public class VideoPlugin extends Plugin {
       }
       call.resolve();
     });
+  }
+
+  @Override
+  protected void handleOnPause() {
+    super.handleOnPause();
+    if (player != null) {
+      // Для ExoPlayer 2.15+ можно player.isPlaying(); ниже – надёжно для разных версий
+      wasPlayingBeforeBackground = player.getPlayWhenReady();
+      lastPositionMs = player.getCurrentPosition();
+      player.pause(); // или: player.setPlayWhenReady(false);
+    }
+  }
+
+  @Override
+  protected void handleOnResume() {
+    super.handleOnResume();
+    if (player != null) {
+      player.seekTo(lastPositionMs);
+      if (wasPlayingBeforeBackground) {
+        player.play(); // или: player.setPlayWhenReady(true);
+      }
+    }
   }
 }
