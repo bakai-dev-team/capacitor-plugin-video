@@ -4,10 +4,16 @@ export class VideoWeb extends WebPlugin {
     async play({ src, muted = true, loop = true }) {
         if (!this.el) {
             this.el = document.createElement('video');
-            Object.assign(this.el.style, {
-                position: 'fixed', inset: '0', width: '100%', height: '100%',
-                objectFit: 'cover', zIndex: '-1'
-            });
+            const style = this.el.style;
+            style.position = 'fixed';
+            style.top = '0';
+            style.left = '0';
+            style.right = '0';
+            style.bottom = '0';
+            style.width = '100%';
+            style.height = '100%';
+            style.objectFit = 'cover';
+            style.zIndex = '-1';
             document.body.appendChild(this.el);
         }
         this.el.src = src;
@@ -20,6 +26,15 @@ export class VideoWeb extends WebPlugin {
         (_a = this.el) === null || _a === void 0 ? void 0 : _a.pause();
         (_b = this.el) === null || _b === void 0 ? void 0 : _b.remove();
         this.el = undefined;
+    }
+    async pause() {
+        var _a;
+        (_a = this.el) === null || _a === void 0 ? void 0 : _a.pause();
+    }
+    async resume() {
+        if (this.el) {
+            await this.el.play().catch(() => undefined);
+        }
     }
 }
 //# sourceMappingURL=web.js.map

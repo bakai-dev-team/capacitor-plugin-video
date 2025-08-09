@@ -4,4 +4,6 @@ export declare class VideoWeb extends WebPlugin implements VideoPlugin {
     private el?;
     play({ src, muted, loop }: PlayOptions): Promise<void>;
     stop(): Promise<void>;
+    pause(): Promise<void>;
+    resume(): Promise<void>;
 }

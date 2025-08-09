@@ -13,9 +13,20 @@ let package = Package(
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "7.0.0")
     ],
     targets: [
+        // ObjC shim target exposing Capacitor macros
+        .target(
+            name: "VideoPluginObjC",
+            dependencies: [
+                .product(name: "Capacitor", package: "capacitor-swift-pm"),
+                .product(name: "Cordova", package: "capacitor-swift-pm")
+            ],
+            path: "ios/Sources/VideoPluginObjC",
+            publicHeadersPath: "include"),
+        // Swift implementation target depends on ObjC shim
         .target(
             name: "VideoPlugin",
             dependencies: [
+                "VideoPluginObjC",
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm")
             ],

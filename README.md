@@ -15,6 +15,8 @@ npx cap sync
 
 * [`play(...)`](#play)
 * [`stop()`](#stop)
+* [`pause()`](#pause)
+* [`resume()`](#resume)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -41,6 +43,28 @@ play(options: PlayOptions) => any
 
 ```typescript
 stop() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### pause()
+
+```typescript
+pause() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### resume()
+
+```typescript
+resume() => any
 ```
 
 **Returns:** <code>any</code>

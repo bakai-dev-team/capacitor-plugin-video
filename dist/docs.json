@@ -32,6 +32,26 @@
         "docs": "",
         "complexTypes": [],
         "slug": "stop"
+      },
+      {
+        "name": "pause",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "pause"
+      },
+      {
+        "name": "resume",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "resume"
       }
     ],
     "properties": []
