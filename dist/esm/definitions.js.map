@@ -1,0 +1,1 @@
+{"version":3,"file":"definitions.js","sourceRoot":"","sources":["../../src/definitions.ts"],"names":[],"mappings":"","sourcesContent":["// src/definitions.ts\nexport interface PlayOptions {\n  src: string;\n  muted?: boolean;\n  loop?: boolean;\n}\nexport interface VideoPlugin {\n  play(options: PlayOptions): Promise<void>;\n  stop(): Promise<void>;\n}"]}
