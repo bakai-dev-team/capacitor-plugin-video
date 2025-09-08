@@ -6,6 +6,8 @@ import AVFoundation
 public class VideoPlugin: CAPPlugin {
     private var player: AVPlayer?
     private var layer: AVPlayerLayer?
+    private var orientationObserver: Any?
+    private var videoView: UIView?
 
     // lifecycle state
     private var lastTime: CMTime = .zero
@@ -59,17 +61,63 @@ public class VideoPlugin: CAPPlugin {
 
         // 4) Подложить слой под WebView и стартануть
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let root = self.bridge?.viewController?.view else { return }
+            guard let self = self,
+                  let root = self.bridge?.viewController?.view,
+                  let webView = self.bridge?.webView else { return }
 
+            let parent: UIView = webView.superview ?? root
+
+            // Создаем контейнер-вью под WebView, чтобы корректно управлять порядком слоев через UIKit
+            if self.videoView == nil {
+                let container = UIView(frame: parent.bounds)
+                container.isUserInteractionEnabled = false
+                container.backgroundColor = .clear
+                container.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                parent.insertSubview(container, belowSubview: webView)
+                // гарантированно ниже webView
+                container.layer.zPosition = -1000
+                self.videoView = container
+            } else {
+                self.videoView?.frame = parent.bounds
+                if let container = self.videoView, container.superview !== parent {
+                    parent.insertSubview(container, belowSubview: webView)
+                }
+                self.videoView?.layer.zPosition = -1000
+            }
+
+            // Создаем или обновляем AVPlayerLayer внутри контейнера
             if self.layer == nil {
                 let l = AVPlayerLayer(player: self.player)
                 l.videoGravity = .resizeAspectFill
-                l.frame = root.bounds
-                root.layer.insertSublayer(l, at: 0) // под WebView
+                l.frame = self.videoView?.bounds ?? parent.bounds
+                self.videoView?.layer.addSublayer(l)
                 self.layer = l
             } else {
                 self.layer?.player = self.player
-                self.layer?.frame = root.bounds
+                self.layer?.frame = self.videoView?.bounds ?? parent.bounds
+            }
+
+            // гарантируем, что сам webView поверх видео
+            webView.isOpaque = false
+            webView.backgroundColor = .clear
+            webView.scrollView.backgroundColor = .clear
+            // поднять вебвью поверх
+            webView.layer.zPosition = 1000
+            parent.bringSubviewToFront(webView)
+
+            if self.orientationObserver == nil {
+                self.orientationObserver = NotificationCenter.default.addObserver(
+                    forName: UIDevice.orientationDidChangeNotification,
+                    object: nil,
+                    queue: .main
+                ) { [weak self] _ in
+                    guard let self = self,
+                          let root = self.bridge?.viewController?.view,
+                          let webView = self.bridge?.webView else { return }
+                    let parent: UIView = webView.superview ?? root
+                    self.videoView?.frame = parent.bounds
+                    self.layer?.frame = self.videoView?.bounds ?? parent.bounds
+                }
             }
 
             self.player?.play()
@@ -110,6 +158,12 @@ public class VideoPlugin: CAPPlugin {
             self.player = nil
             self.layer?.removeFromSuperlayer()
             self.layer = nil
+            if let obs = self.orientationObserver {
+                NotificationCenter.default.removeObserver(obs)
+                self.orientationObserver = nil
+            }
+            self.videoView?.removeFromSuperview()
+            self.videoView = nil
             call.resolve()
         }
     }
